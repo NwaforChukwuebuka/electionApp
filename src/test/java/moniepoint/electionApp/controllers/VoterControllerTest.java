@@ -1,6 +1,6 @@
 package moniepoint.electionApp.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import moniepoint.electionApp.dtos.requests.VoterRegistrationRequest;
 import moniepoint.electionApp.dtos.responses.LoginResponse;
 import moniepoint.electionApp.dtos.responses.LogoutResponse;
@@ -11,9 +11,9 @@ import moniepoint.electionApp.exceptions.InvalidLoginDetailsException;
 import moniepoint.electionApp.services.VoterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,9 +33,9 @@ class VoterControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
-    @MockBean
+    @MockitoBean
     private VoterService voterService;
 
     @Test
@@ -57,7 +57,7 @@ class VoterControllerTest {
 
         mockMvc.perform(post("/voter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(body)))
+                        .content(jsonMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.email").value("ada@example.com"));
@@ -79,7 +79,7 @@ class VoterControllerTest {
 
         mockMvc.perform(post("/voter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(body)))
+                        .content(jsonMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.data").value("Voter with email dup@example.com already exists"));
