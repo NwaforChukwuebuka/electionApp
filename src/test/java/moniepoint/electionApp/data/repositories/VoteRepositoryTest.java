@@ -37,4 +37,23 @@ class VoteRepositoryTest {
     void existsByElectionIdAndVoterId_falseWhenNoVote() {
         assertFalse(voteRepository.existsByElectionIdAndVoterId("el-1", "voter-1"));
     }
+
+    @Test
+    void findByElectionId_returnsVotesForThatElection() {
+        voteRepository.save(Vote.builder()
+                .electionId("el-a")
+                .voterId("v-1")
+                .candidateId("c-1")
+                .castAt(Instant.now())
+                .build());
+        voteRepository.save(Vote.builder()
+                .electionId("el-b")
+                .voterId("v-2")
+                .candidateId("c-2")
+                .castAt(Instant.now())
+                .build());
+
+        assertEquals(1, voteRepository.findByElectionId("el-a").size());
+        assertEquals("c-1", voteRepository.findByElectionId("el-a").getFirst().getCandidateId());
+    }
 }
